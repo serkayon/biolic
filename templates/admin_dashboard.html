@@ -1,0 +1,904 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Admin Dashboard - User & License Management"
+    />
+    <title>Admin Dashboard - User Management</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='admin.css') }}"
+    />
+    <style>
+      /* AWS-Inspired Admin Dashboard */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        background: #f5f5f5;
+        color: #232f3e;
+      }
+
+      .admin-container {
+        display: flex;
+        min-height: 100vh;
+        background: #fff;
+      }
+
+      /* Top Navigation Bar - AWS Style */
+      .top-nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 48px;
+        background: #232f3e;
+        display: flex;
+        align-items: center;
+        padding: 0 20px;
+        z-index: 1001;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+      }
+
+      .logo-brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #fff;
+        font-weight: 700;
+        font-size: 16px;
+      }
+
+      .logo-brand span {
+        font-size: 20px;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        width: 260px;
+        background: #232f3e;
+        color: #fff;
+        padding: 60px 0 0 0;
+        position: fixed;
+        height: 100vh;
+        overflow-y: auto;
+        z-index: 1000;
+      }
+
+      .sidebar-header {
+        padding: 20px;
+        border-bottom: 1px solid rgba(255, 153, 0, 0.3);
+      }
+
+      .sidebar-header h2 {
+        font-size: 14px;
+        margin-bottom: 0;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #ff9900;
+      }
+
+      .sidebar-nav {
+        padding: 20px 0;
+      }
+
+      .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 20px;
+        color: #adb5bd;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        font-size: 13px;
+        font-weight: 500;
+        border-left: 3px solid transparent;
+      }
+
+      .nav-item:hover {
+        background: rgba(255, 153, 0, 0.1);
+        color: #ff9900;
+        border-left-color: #ff9900;
+      }
+
+      .nav-item.active {
+        background: rgba(255, 153, 0, 0.15);
+        color: #ff9900;
+        border-left-color: #ff9900;
+        font-weight: 600;
+      }
+
+      .nav-item .icon {
+        font-size: 16px;
+      }
+
+      .sidebar-footer {
+        position: absolute;
+        bottom: 20px;
+        width: 100%;
+        padding: 0 20px;
+      }
+
+      .btn-logout {
+        display: block;
+        padding: 10px 16px;
+        background: transparent;
+        color: #adb5bd;
+        border: 1px solid #adb5bd;
+        border-radius: 2px;
+        text-decoration: none;
+        text-align: center;
+        font-size: 12px;
+        font-weight: 600;
+        transition: all 0.2s ease;
+        cursor: pointer;
+      }
+
+      .btn-logout:hover {
+        color: #ff9900;
+        border-color: #ff9900;
+      }
+
+      /* Main Content */
+      .main-content {
+        margin-left: 260px;
+        margin-top: 48px;
+        flex: 1;
+        padding: 30px;
+      }
+
+      .page-header {
+        margin-bottom: 30px;
+      }
+
+      .page-header h1 {
+        font-size: 28px;
+        margin-bottom: 8px;
+        font-weight: 700;
+        color: #232f3e;
+      }
+
+      .page-header p {
+        font-size: 13px;
+        color: #adb5bd;
+        margin: 0;
+      }
+
+      .toolbar {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 30px;
+        align-items: center;
+      }
+
+      .search-box {
+        flex: 1;
+        max-width: 400px;
+        position: relative;
+      }
+
+      .search-input {
+        width: 100%;
+        padding: 10px 12px;
+        padding-left: 32px;
+        font-size: 13px;
+        border: 1px solid #d5d8dc;
+        border-radius: 2px;
+        background: #fff;
+        transition: border-color 0.2s ease;
+      }
+
+      .search-input:focus {
+        outline: none;
+        border-color: #ff9900;
+        box-shadow: 0 0 0 3px rgba(255, 153, 0, 0.1);
+      }
+
+      .search-icon {
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #adb5bd;
+        font-size: 14px;
+      }
+
+      /* Stats Cards */
+      .stats-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 30px;
+      }
+
+      .stat-card {
+        background: #fff;
+        border: 1px solid #d5d8dc;
+        padding: 20px;
+        border-radius: 2px;
+      }
+
+      .stat-label {
+        font-size: 12px;
+        color: #adb5bd;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 8px;
+        font-weight: 600;
+      }
+
+      .stat-value {
+        font-size: 32px;
+        font-weight: 700;
+        color: #232f3e;
+        margin: 0;
+      }
+
+      /* Table Container */
+      .table-container {
+        background: #fff;
+        border: 1px solid #d5d8dc;
+        border-radius: 2px;
+      }
+
+      .table-header {
+        padding: 15px 20px;
+        background: #f5f5f5;
+        border-bottom: 1px solid #d5d8dc;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .table-header h2 {
+        font-size: 16px;
+        font-weight: 700;
+        color: #232f3e;
+        margin: 0;
+      }
+
+      .table-wrapper {
+        overflow-x: auto;
+      }
+
+      .users-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+      }
+
+      .users-table thead {
+        background: #f5f5f5;
+        border-bottom: 1px solid #d5d8dc;
+      }
+
+      .users-table th {
+        padding: 12px 20px;
+        text-align: left;
+        font-weight: 600;
+        color: #232f3e;
+        text-transform: uppercase;
+        font-size: 11px;
+        letter-spacing: 0.5px;
+      }
+
+      .users-table tbody tr {
+        border-bottom: 1px solid #e5e7eb;
+        transition: background-color 0.2s ease;
+      }
+
+      .users-table tbody tr:hover {
+        background: #f9f9f9;
+      }
+
+      .users-table td {
+        padding: 14px 20px;
+        vertical-align: middle;
+      }
+
+      .user-name {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 500;
+        color: #232f3e;
+      }
+
+      .avatar {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 2px;
+        background: #ff9900;
+        color: #fff;
+        font-weight: 700;
+        font-size: 14px;
+      }
+
+      .badge {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 2px;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+      }
+
+      .badge.active {
+        background: #d4edda;
+        color: #155724;
+      }
+
+      .badge.expired {
+        background: #f8d7da;
+        color: #721c24;
+      }
+
+      .badge.inactive {
+        background: #e2e3e5;
+        color: #383d41;
+      }
+
+      .badge.plan {
+        background: #e7f3ff;
+        color: #004085;
+      }
+
+      .btn-view {
+        display: inline-block;
+        padding: 6px 12px;
+        background: #ff9900;
+        color: #fff;
+        border: none;
+        border-radius: 2px;
+        font-size: 12px;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+      }
+
+      .btn-view:hover {
+        background: #ec7211;
+      }
+
+      /* Pagination */
+      .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        padding: 20px;
+        border-top: 1px solid #d5d8dc;
+      }
+
+      .pagination button,
+      .pagination a {
+        padding: 8px 12px;
+        border: 1px solid #d5d8dc;
+        background: #fff;
+        color: #232f3e;
+        text-decoration: none;
+        font-size: 12px;
+        font-weight: 600;
+        border-radius: 2px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .pagination button:hover,
+      .pagination a:hover {
+        background: #f5f5f5;
+        border-color: #adb5bd;
+      }
+
+      .page-info {
+        color: #adb5bd;
+        font-size: 12px;
+      }
+
+      .empty-state {
+        padding: 60px 20px;
+        text-align: center;
+        color: #adb5bd;
+      }
+
+      .empty-state p {
+        font-size: 14px;
+        margin: 0;
+      }
+
+      /* Scrollbar */
+      .sidebar::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .sidebar::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      .sidebar::-webkit-scrollbar-thumb {
+        background: rgba(255, 153, 0, 0.3);
+        border-radius: 3px;
+      }
+
+      .sidebar::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 153, 0, 0.5);
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .sidebar {
+          width: 220px;
+        }
+
+        .main-content {
+          margin-left: 220px;
+          padding: 20px;
+        }
+
+        .page-header h1 {
+          font-size: 22px;
+        }
+
+        .stats-container {
+          grid-template-columns: 1fr;
+        }
+
+        .toolbar {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .search-box {
+          max-width: 100%;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .sidebar {
+          width: 200px;
+        }
+
+        .main-content {
+          margin-left: 200px;
+          padding: 15px;
+        }
+
+        .users-table {
+          font-size: 12px;
+        }
+
+        .users-table th,
+        .users-table td {
+          padding: 10px 12px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Top Navigation -->
+    <div class="top-nav">
+      <div class="logo-brand">
+        <span>🔐</span>
+        <span>BIO RADAR Admin</span>
+      </div>
+    </div>
+
+    <div class="admin-container">
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <div class="sidebar-header">
+          <h2>Services</h2>
+        </div>
+        <nav class="sidebar-nav">
+          <a href="/admin/dashboard" class="nav-item active">
+            <span class="icon">👥</span>
+            <span>Users</span>
+          </a>
+          <a href="/api/auth/verify" class="nav-item">
+            <span class="icon">⚙️</span>
+            <span>Settings</span>
+          </a>
+        </nav>
+        <div class="sidebar-footer">
+          <a href="/" class="btn-logout">Back to Home</a>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="main-content">
+        <div class="page-header">
+          <h1>User Management</h1>
+          <p>Manage and monitor user accounts and licenses</p>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-container">
+          <div class="stat-card">
+            <div class="stat-label">Total Users</div>
+            <p class="stat-value">{{ total }}</p>
+          </div>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="toolbar">
+          <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input
+              type="text"
+              id="searchInput"
+              class="search-input"
+              placeholder="Search by name, email, or machine ID..."
+            />
+          </div>
+        </div>
+
+        {% if users %}
+        <div class="table-wrapper">
+          <table class="users-table">
+            <thead>
+              <tr>
+                <th>👤 Name</th>
+                <th>📧 Email</th>
+                <th>💻 Machine</th>
+                <th>📋 Plan</th>
+                <th>📅 Expiry Date</th>
+                <th>🔐 License Status</th>
+                <th>⚙️ Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in users %} {% set user = item.user %} {% set
+              machine_login = item.machine_login %} {% set license =
+              item.license %}
+              <tr class="user-row">
+                <td class="name-cell">
+                  <span
+                    class="avatar"
+                    style="
+                      background: linear-gradient(
+                        135deg,
+                        #2a5298 0%,
+                        #1e3c72 100%
+                      );
+                    "
+                    >{{ user.name[0].upper() }}</span
+                  >
+                  <span class="user-name">{{ user.name }}</span>
+                </td>
+                <td><span class="email-badge">{{ user.email }}</span></td>
+                <td>
+                  <span class="machine-badge"
+                    >{% if machine_login %}{{ machine_login.machine_name or
+                    'Unknown' }}{% else %}Not Logged In{% endif %}</span
+                  >
+                </td>
+                <td>
+                  {% if license %}
+                  <span
+                    class="plan-badge"
+                    style="
+                      background: #e3f2fd;
+                      color: #1976d2;
+                      border: 1px solid #bbdefb;
+                    "
+                    >{{ license.plan_name }}</span
+                  >
+                  {% else %}
+                  <span
+                    class="plan-badge no-plan"
+                    style="
+                      background: #f5f5f5;
+                      color: #999;
+                      border: 1px solid #ddd;
+                    "
+                    >No License</span
+                  >
+                  {% endif %}
+                </td>
+                <td>
+                  {% if license %}
+                  <span class="date-badge"
+                    >{{ license.expiry_date.strftime('%Y-%m-%d') }}</span
+                  >
+                  {% else %}
+                  <span class="date-badge">—</span>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if license %} {% if license.is_active %}
+                  <span
+                    class="license-status active"
+                    style="
+                      background: #c8e6c9;
+                      color: #2e7d32;
+                      border-left: 4px solid #2e7d32;
+                    "
+                    >✓ Active</span
+                  >
+                  {% else %}
+                  <span
+                    class="license-status expired"
+                    style="
+                      background: #ffcdd2;
+                      color: #c62828;
+                      border-left: 4px solid #c62828;
+                    "
+                    >✕ Expired</span
+                  >
+                  {% endif %} {% else %}
+                  <span
+                    class="license-status inactive"
+                    style="
+                      background: #f5f5f5;
+                      color: #666;
+                      border-left: 4px solid #999;
+                    "
+                    >— None</span
+                  >
+                  {% endif %}
+                </td>
+                <td>
+                  <a
+                    href="/admin/user/{{ user.id }}"
+                    class="btn-view"
+                    title="View detailed information"
+                    >View →</a
+                  >
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <style>
+          .table-wrapper {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            margin-bottom: 30px;
+          }
+
+          .users-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+          }
+
+          .users-table thead {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
+            border-bottom: 2px solid #dee2e6;
+          }
+
+          .users-table th {
+            padding: 16px;
+            text-align: left;
+            font-weight: 700;
+            color: #1a1a1a;
+            letter-spacing: 0.5px;
+            font-size: 13px;
+            text-transform: uppercase;
+          }
+
+          .users-table tbody tr {
+            border-bottom: 1px solid #f0f0f0;
+            transition: all 0.3s ease;
+          }
+
+          .users-table tbody tr:hover {
+            background: #f9f9f9;
+            box-shadow: inset 3px 0 0 #2a5298;
+          }
+
+          .users-table td {
+            padding: 16px;
+            vertical-align: middle;
+          }
+
+          .avatar {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            color: white;
+            font-weight: 700;
+            font-size: 16px;
+            margin-right: 12px;
+          }
+
+          .name-cell {
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+            color: #1a1a1a;
+          }
+
+          .email-badge,
+          .machine-badge,
+          .date-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            background: #f5f5f5;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #333;
+            font-family: "Courier New", monospace;
+          }
+
+          .plan-badge {
+            display: inline-block;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+          }
+
+          .license-status {
+            display: inline-block;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            padding-left: 12px;
+          }
+
+          .btn-view {
+            display: inline-block;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #2a5298 0%, #1e3c72 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+          }
+
+          .btn-view:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(42, 82, 152, 0.3);
+          }
+
+          .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            flex-wrap: wrap;
+          }
+
+          .btn-pagination {
+            padding: 10px 16px;
+            background: white;
+            color: #2a5298;
+            border: 2px solid #2a5298;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+          }
+
+          .btn-pagination:hover {
+            background: #2a5298;
+            color: white;
+            transform: translateY(-2px);
+          }
+
+          .page-info {
+            padding: 10px 16px;
+            background: #f5f7fa;
+            border-radius: 6px;
+            font-weight: 600;
+            color: #1a1a1a;
+            font-size: 13px;
+          }
+        </style>
+
+        <div class="pagination">
+          {% if current_page > 1 %}
+          <a
+            href="/admin/dashboard?page=1"
+            class="btn-pagination"
+            title="Go to first page"
+            >« First</a
+          >
+          <a
+            href="/admin/dashboard?page={{ current_page - 1 }}"
+            class="btn-pagination"
+            title="Go to previous page"
+            >‹ Previous</a
+          >
+          {% endif %}
+
+          <span class="page-info">Page {{ current_page }} of {{ pages }}</span>
+
+          {% if current_page < pages %}
+          <a
+            href="/admin/dashboard?page={{ current_page + 1 }}"
+            class="btn-pagination"
+            title="Go to next page"
+            >Next ›</a
+          >
+          <a
+            href="/admin/dashboard?page={{ pages }}"
+            class="btn-pagination"
+            title="Go to last page"
+            >Last »</a
+          >
+          {% endif %}
+        </div>
+        {% else %}
+        <div
+          class="empty-state"
+          style="
+            background: white;
+            padding: 60px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+          "
+        >
+          <p style="font-size: 18px; color: #999; margin: 0">
+            📭 No users found
+          </p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <script>
+      // Enhanced search functionality
+      const searchInput = document.getElementById("searchInput");
+
+      if (searchInput) {
+        searchInput.addEventListener("keyup", function (e) {
+          const searchTerm = e.target.value.toLowerCase();
+          const rows = document.querySelectorAll(".user-row");
+
+          rows.forEach((row) => {
+            const text = row.innerText.toLowerCase();
+            row.style.display = text.includes(searchTerm) ? "" : "none";
+          });
+        });
+
+        // Add focus styling
+        searchInput.addEventListener("focus", function () {
+          this.parentElement.style.boxShadow =
+            "0 0 0 3px rgba(42, 82, 152, 0.1)";
+        });
+
+        searchInput.addEventListener("blur", function () {
+          this.parentElement.style.boxShadow = "none";
+        });
+      }
+    </script>
+  </body>
+</html>

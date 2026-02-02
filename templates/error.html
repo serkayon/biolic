@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Error - Admin Dashboard</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
+          Cantarell, sans-serif;
+        background: linear-gradient(135deg, #232f3e 0%, #1a1f2e 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+
+      .error-container {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        padding: 40px;
+        max-width: 600px;
+        text-align: center;
+      }
+
+      .error-icon {
+        font-size: 80px;
+        margin-bottom: 20px;
+        display: block;
+      }
+
+      .error-title {
+        font-size: 32px;
+        color: #232f3e;
+        margin-bottom: 15px;
+        font-weight: 600;
+      }
+
+      .error-message {
+        font-size: 16px;
+        color: #666;
+        line-height: 1.6;
+        margin-bottom: 30px;
+        background: #f5f5f5;
+        padding: 20px;
+        border-radius: 8px;
+        border-left: 4px solid #ff6b6b;
+        text-align: left;
+        word-break: break-word;
+        font-family: "Monaco", "Courier New", monospace;
+        font-size: 13px;
+      }
+
+      .error-code {
+        display: inline-block;
+        background: #ff9900;
+        color: white;
+        padding: 8px 16px;
+        border-radius: 4px;
+        margin-bottom: 20px;
+        font-weight: 600;
+      }
+
+      .error-details {
+        margin-top: 30px;
+        padding-top: 30px;
+        border-top: 1px solid #e0e0e0;
+        text-align: left;
+      }
+
+      .error-detail-item {
+        margin: 15px 0;
+        font-size: 14px;
+      }
+
+      .error-detail-label {
+        color: #666;
+        font-weight: 600;
+        margin-bottom: 5px;
+      }
+
+      .error-detail-value {
+        color: #333;
+        background: #f9f9f9;
+        padding: 10px;
+        border-radius: 4px;
+        word-break: break-all;
+      }
+
+      .error-actions {
+        margin-top: 30px;
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+      }
+
+      .btn {
+        padding: 12px 24px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        border: none;
+        transition: all 0.3s ease;
+      }
+
+      .btn-primary {
+        background: #ff9900;
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background: #e68900;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 153, 0, 0.3);
+      }
+
+      .btn-secondary {
+        background: #e0e0e0;
+        color: #333;
+      }
+
+      .btn-secondary:hover {
+        background: #d0d0d0;
+      }
+
+      .error-footer {
+        margin-top: 30px;
+        font-size: 12px;
+        color: #999;
+      }
+
+      .support-info {
+        margin-top: 20px;
+        padding: 15px;
+        background: #e3f2fd;
+        border-radius: 6px;
+        font-size: 13px;
+        color: #1565c0;
+      }
+
+      .support-info strong {
+        display: block;
+        margin-bottom: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="error-container">
+      <span class="error-icon">⚠️</span>
+      <h1 class="error-title">Oops! An Error Occurred</h1>
+
+      <div class="error-code">ERROR 500</div>
+
+      {% if message %}
+      <div class="error-message">{{ message }}</div>
+      {% else %}
+      <div class="error-message">
+        An unexpected error has occurred. Please try again later.
+      </div>
+      {% endif %}
+
+      <div class="error-details">
+        <div class="error-detail-item">
+          <div class="error-detail-label">What happened?</div>
+          <div class="error-detail-value">
+            The server encountered an unexpected condition while processing your
+            request. This could be due to database schema changes, missing data,
+            or system configuration issues.
+          </div>
+        </div>
+
+        <div class="error-detail-item">
+          <div class="error-detail-label">How to fix it?</div>
+          <div class="error-detail-value">
+            <ul style="margin-left: 20px">
+              <li>Try refreshing the page</li>
+              <li>Clear browser cache and cookies</li>
+              <li>Check if the database is properly configured</li>
+              <li>Ensure all required database migrations have been applied</li>
+              <li>Check server logs for more details</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="support-info">
+        <strong>💡 Tip:</strong> If you're seeing database-related errors, try
+        running the database initialization script to ensure all tables and
+        columns are properly created.
+      </div>
+
+      <div class="error-actions">
+        <button
+          onclick="window.location.href = '/admin/dashboard'"
+          class="btn btn-primary"
+        >
+          Go to Dashboard
+        </button>
+        <button onclick="window.history.back()" class="btn btn-secondary">
+          Go Back
+        </button>
+      </div>
+
+      <div class="error-footer">
+        <p>If this problem persists, please contact support</p>
+      </div>
+    </div>
+  </body>
+</html>
