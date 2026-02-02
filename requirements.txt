@@ -6,5 +6,7 @@ Flask-Migrate==4.0.5
 python-dotenv==1.0.0
 Werkzeug==2.3.7
 cryptography==41.0.7
+psycopg2-binary==2.9.11
 psycopg[binary]
 gunicorn==21.2.0
+
