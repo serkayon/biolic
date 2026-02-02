@@ -16,7 +16,7 @@ class EmailService:
         self.smtp_port = 587
         self.sender_email = os.getenv('EMAIL_USER')
         self.sender_password = os.getenv('EMAIL_PASSWORD')
-        self.timeout = 10  # seconds
+        self.timeout = 60  # seconds
     
     def is_configured(self):
         return bool(self.sender_email and self.sender_password)
@@ -101,3 +101,4 @@ If you did not request this, ignore this email.
 
 # Singleton instance
 email_service = EmailService()
+
