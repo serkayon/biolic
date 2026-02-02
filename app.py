@@ -9,6 +9,7 @@ import routes_machines
 import routes_admin
 import routes_subscriptions
 import routes_otp
+import email_worker 
 from request_logger import setup_request_logging
 
 def create_app(config_name='production'):
@@ -61,3 +62,4 @@ app = create_app()
 if __name__ == '__main__':
     env = os.getenv("FLASK_ENV", "development")
     app.run(host='0.0.0.0', port=5000, debug=True)
+
