@@ -11,7 +11,7 @@ import routes_subscriptions
 import routes_otp
 from request_logger import setup_request_logging
 
-def create_app(config_name='development'):
+def create_app(config_name='production'):
     app = Flask(__name__)
     
     # Load configuration
@@ -30,7 +30,7 @@ def create_app(config_name='development'):
     # Setup logging
     setup_request_logging(app)
     
-    # Create tables (dev only, safe for now)
+    # Create tables (dev only)
     with app.app_context():
         db.create_all()
     
@@ -47,9 +47,17 @@ def create_app(config_name='development'):
     def health():
         return jsonify({'status': 'healthy'}), 200
     
+    # Home
+    @app.route('/')
+    def index():
+        return jsonify({"service": "Bio Radar API", "status": "running"})
+    
     return app
 
+# 🔥 REQUIRED FOR RENDER
+app = create_app()
+
+# Local only
 if __name__ == '__main__':
     env = os.getenv("FLASK_ENV", "development")
-    app = create_app(env)
-    app.run(host='0.0.0.0', port=5000, debug=(env == "development"))
+    app.run(host='0.0.0.0', port=5000, debug=True)
